@@ -3,3 +3,4 @@
 
 require 'ouroborus'
 
+ouroborus_server 8000
