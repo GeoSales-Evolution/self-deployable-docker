@@ -1,6 +1,6 @@
 FROM ruby:3-alpine as build
 WORKDIR /app
-RUN apk update && apk add git && apk add bash
+RUN apk update && apk add git
 RUN bundle config --global frozen 1
 COPY Gemfile Gemfile.lock ouroborus.gemspec /app/
 RUN bundle package --all
