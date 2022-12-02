@@ -14,6 +14,10 @@ debug-no-mount: image
 
 image: .image
 
-.image : Dockerfile Gemfile ouroborus.gemspec
+.image : Dockerfile Gemfile Gemfile.lock ouroborus.gemspec
 	docker build . -t ouroborus:latest
 	touch .image
+
+Gemfile.lock: Gemfile
+	docker run -it --entrypoint sh -w /app -v `pwd`:/app ruby:3-alpine -c ./update
+
