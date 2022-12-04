@@ -3,10 +3,16 @@
 require 'webrick'
 
 class ShutDownServlet < WEBrick::HTTPServlet::AbstractServlet
+  def initialize server, suicide_squad
+    super server
+    @suicide_squad = suicide_squad
+  end
   def do_PUT request, response
     response.status = 200
     response.content_type = "text/plain"
-    response.body = 'Hello, World!'
+    response.body = 'Ok, bye!'
+
+    @suicide_squad.call
   end
 end
 
@@ -30,7 +36,13 @@ def ouroborus_server(port = 8000)
     res.body = 'Hello, world'
   end
   puts 'montar servlet'
-  server.mount '/shutdown', ShutDownServlet
+  suicide_squad = -> {
+    Thread.new do
+      sleep 2
+      server.shutdown
+    end
+  }
+  server.mount '/shutdown', ShutDownServlet, suicide_squad
   puts 'montou servlet'
 
   trap 'INT' do server.shutdown end
