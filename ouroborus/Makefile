@@ -1,19 +1,20 @@
 .PHONY: run debug debug-no-mount image prune debug-as-ruby
 
+DOCKER_SOCKET_BIND=-v /var/run/docker.sock:/var/run/docker.sock
 PORT=8000
 PORT_BIND=-p $(PORT):$(PORT)
 
 run: image
-	docker run -it $(PORT_BIND) ouroborus:latest
+	docker run --restart unless-stopped -it $(PORT_BIND) $(DOCKER_SOCKET_BIND) ouroborus:latest
 
 debug: image
-	docker run -it $(PORT_BIND) --entrypoint sh -v `pwd`:/app ouroborus:latest
+	docker run -it $(PORT_BIND) $(DOCKER_SOCKET_BIND) --entrypoint sh -v `pwd`:/app ouroborus:latest
 
 debug-as-ruby:
-	docker run -it $(PORT_BIND) --entrypoint sh -v `pwd`:/app ruby:3-alpine
+	docker run -it $(PORT_BIND) $(DOCKER_SOCKET_BIND) --entrypoint sh -v `pwd`:/app ruby:3-alpine
 
 debug-no-mount: image
-	docker run -it $(PORT_BIND) --entrypoint sh ouroborus:latest
+	docker run -it $(PORT_BIND) $(DOCKER_SOCKET_BIND) --entrypoint sh ouroborus:latest
 
 image: Dockerfile Gemfile Gemfile.lock ouroborus.gemspec
 	docker build . -t ouroborus:latest
