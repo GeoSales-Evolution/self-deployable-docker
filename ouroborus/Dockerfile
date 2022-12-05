@@ -9,6 +9,7 @@ RUN bundle package --all
 FROM ruby:3-alpine
 EXPOSE 8000
 WORKDIR /app 
+RUN apk update && apk add docker
 
 #Copying webrick gem already pulled from git
 COPY --from=build /app /app
