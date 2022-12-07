@@ -15,4 +15,10 @@ Alternatively, one can also pass a `--script` with an absolute path reference
 and it will execute said script instead of `docker`, all other args to this
 said script will be after `--`.
 
+If you must create dyamically the script to start your container and don't have
+the confidence that only mounting a volume will do, you can pass the script from
+stdin. Just add `--stdin` and your script will be created from stdin until EOF
+is reached. It will be saved in a file named `.script`. All args after `--` will
+be given to said script.
+
 Check the `--help` for `hestia` for more information.

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+HIDDEN_STDIN_SCRIPT=.script
+
 show-help() {
 	cat <<EOH
 usage: $0 [hestia-flags ...] -- [docker-args ...]
@@ -9,7 +11,25 @@ $0 takes some options to sleep and after some time it starts a container.
 	-h | --help         show this help and exists successfully
 	--script [script]   executes the passed script instead of docker
 	--sleep [time]      sleeps for the given time (in seconds) instead of default 10 seconds
+	--stdin             reads script from stdin until EOF has been reached, saves in '.script'
+                            file and executes it. The last '--stdin' ou '--script' flag wil prevail.
+                            If shebang not provided in '--stdin' it will prepend '#!/bin/sh'
 EOH
+}
+
+read_executable() {
+	local LINE
+	if ! read LINE; then
+		return
+	fi
+	if [ "${LINE:0:2}" = '#!' ]; then
+		echo "$LINE"
+	else
+		echo '#!/bin/sh'
+		echo "$LINE"
+	fi > "./${HIDDEN_STDIN_SCRIPT}"
+	cat - >> "./${HIDDEN_STDIN_SCRIPT}"
+	chmod u+x "./${HIDDEN_STDIN_SCRIPT}"
 }
 
 EXECUTABLE=docker
@@ -37,6 +57,10 @@ while [ $# -gt 0 ]; do
 		--script)
 			shift
 			EXECUTABLE="$1"
+			;;
+		--stdin)
+			read_executable
+			EXECUTABLE="./${HIDDEN_STDIN_SCRIPT}"
 			;;
 		*)
 			echo "Non-recognized arg '$1" >&2
