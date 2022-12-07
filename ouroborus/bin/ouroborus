@@ -3,4 +3,4 @@
 
 require 'ouroborus'
 
-ouroborus_server 8000
+Ouroborus::ouroborus_server 8000
