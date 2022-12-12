@@ -3,4 +3,6 @@
 
 require 'ouroborus'
 
-Ouroborus::ouroborus_server 8000
+server = Ouroborus::ouroborus_server 8000, false
+
+server.start
