@@ -37,8 +37,35 @@ module Ouroborus
     end
   end
 
-  def self.ouroborus_server(port = 8000)
-    server = WEBrick::HTTPServer.new :Port => port
+  class OuroborusServer < WEBrick::HTTPServer
+    def initialize(port, isDocker)
+      super :Port => port
+      @isDocker = isDocker
+    end
+
+    def start
+      puts 'starting ouroborus server'
+      super
+    end
+
+    def shutdown
+      super
+      stopActions
+    end
+
+    def stopActions
+      return unless @isDocker
+      hostname=`hostname`
+      puts `docker stop #{hostname}`
+    end
+
+    def to_s
+      super
+    end
+  end
+
+  def self.ouroborus_server(port = 8000, docker = true)
+    server = OuroborusServer.new(port, docker)
 
     server.mount_proc '/' do |req, res|
       if req.path != '/' then
@@ -68,10 +95,6 @@ module Ouroborus
     puts 'montou servlet'
 
     trap 'INT' do server.shutdown end
-
-    puts 'iniciando o server'
-    server.start
-    hostname=`hostname`
-    puts `docker stop #{hostname}`
+    server
   end
 end
