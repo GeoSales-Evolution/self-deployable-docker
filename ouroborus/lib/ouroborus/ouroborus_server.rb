@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'webrick'
+
 module Ouroborus
   class ShutDownServlet < WEBrick::HTTPServlet::AbstractServlet
     def initialize server, suicide_squad
