@@ -5,4 +5,4 @@ source "https://rubygems.org"
 gemspec
 
 gem "webrick", github: 'ruby/webrick', ref: '14612a7540fdd7373344461851c4bfff64985b3e'
-#gem "webrick", github: 'ruby/webrick', ref: '14612a7540fdd7373344461851c4bfff64985b3e'
+gem 'rspec'
