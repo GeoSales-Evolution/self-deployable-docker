@@ -43,6 +43,22 @@ module Ouroborus
       ' \\$#\'\"'.include? c
     end
   end
+  class RestartCondition
+    class << self
+      STATUSES = {
+        :ALWAYS => "always",
+        :NEVER => "no",
+        :UNLESS_STOPPED => "unless-stopped",
+        :ON_FAILURE => "on-failure"
+      }
+      def valid?(condition)
+        STATUSES.has_key? condition
+      end
+      def as_string(condition)
+        STATUSES[condition]
+      end
+    end
+  end
   class Container
     attr_reader :args
     def initialize(name:, image:, tag: 'latest')
@@ -79,6 +95,17 @@ module Ouroborus
       v = "#{their}"
       v += ":#{ours}" unless ours.nil?
       @dockerArgs << '-v' << v
+    end
+
+    def restart(condition, maxRetries = nil)
+      raise "restart condition must met RestartCondition.valid?" unless RestartCondition.valid? condition
+      condStr = if !maxRetries.nil?
+        raise "restart maxRetries should only be set when condition is :ON_FAILURE" unless condition == :ON_FAILURE
+        "#{RestartCondition.as_string condition}:#{maxRetries}"
+      else
+        "#{RestartCondition.as_string condition}"
+      end
+      @dockerArgs << '--restart' << condStr
     end
 
     def env(name, value = nil)
