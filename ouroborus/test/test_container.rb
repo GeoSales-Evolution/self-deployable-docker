@@ -17,7 +17,7 @@ describe Ouroborus::Container do
     Ouroborus::Container.new name: 'lala', image: 'leli'
   end
 
-  PREFIX = "docker run"
+  PREFIX = "docker run -d"
   SUFFIX = "--name lala leli:latest"
   it 'should add an arg to a container' do
     container = emptyContainer
