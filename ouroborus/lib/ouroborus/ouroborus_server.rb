@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'webrick'
+require_relative 'container'
 
 module Ouroborus
   class ShutDownServlet < WEBrick::HTTPServlet::AbstractServlet
@@ -32,10 +33,19 @@ module Ouroborus
     end
 
     def hestia
+      hestia_container = Container.new name: 'hestia', image: 'hestia', tag: 'latest'
+
       docker_socket = "/var/run/docker.sock"
-      docker_socket_bind = "-v #{docker_socket}:#{docker_socket}"
-      port_bind = "-p #{@port}:#{@port}"
-      `docker run -d #{docker_socket_bind} hestia -- run -d --restart unless-stopped #{port_bind} #{docker_socket_bind} ouroborus:latest`
+      hestia_container.volume docker_socket,docker_socket
+
+      ouroborus_container = Container.new name: 'ouroborus', image: 'ouroborus', tag: 'latest'
+
+      ouroborus_container.restart :UNLESS_STOPPED
+      ouroborus_container.port @port,@port
+      ouroborus_container.volume docker_socket,docker_socket
+
+      hestia_container.args << "--" << ouroborus_container.as_args
+      `#{hestia_container}`
     end
   end
 
