@@ -67,6 +67,19 @@ module Ouroborus
       @tag = tag
       @dockerArgs = Args.new
       @args = Args.new
+      @daemon = true
+    end
+
+    def daemon?
+      @daemon
+    end
+
+    def daemon=(value)
+      if value
+        @daemon = true
+      else
+        @daemon = false
+      end
     end
 
     def imgTag
@@ -81,7 +94,12 @@ module Ouroborus
 
     def as_args
       replaceable = Args.new
-      replaceable << "run" << "-d"
+      replaceable << "run"
+      if daemon?
+        replaceable << "-d"
+      else
+        replaceable << "-i"
+      end
       replaceable << @dockerArgs << "--name" << @name << imgTag << @args
     end
 

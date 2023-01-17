@@ -34,6 +34,7 @@ module Ouroborus
 
     def hestia
       hestia_container = Container.new name: 'hestia', image: 'hestia', tag: 'latest'
+      hestia_container.daemon = false
 
       docker_socket = "/var/run/docker.sock"
       hestia_container.volume docker_socket,docker_socket
@@ -44,8 +45,13 @@ module Ouroborus
       ouroborus_container.port @port,@port
       ouroborus_container.volume docker_socket,docker_socket
 
-      hestia_container.args << "--" << ouroborus_container.as_args
-      `#{hestia_container}`
+      hestia_container.args << "--stdin"
+
+      IO.pipe do |rd, wr|
+        spawn("#{hestia_container}", :in => rd)
+        wr.puts "docker rm ouroborus\n"
+        wr.puts "#{ouroborus_container}\n"
+      end
     end
   end
 
