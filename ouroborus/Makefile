@@ -5,7 +5,7 @@ PORT=8000
 PORT_BIND=-p $(PORT):$(PORT)
 
 run: image
-	docker run --restart unless-stopped -it $(PORT_BIND) $(DOCKER_SOCKET_BIND) ouroborus:latest
+	docker run --restart no -it $(PORT_BIND) $(DOCKER_SOCKET_BIND) ouroborus:latest
 
 debug: image
 	docker run -it $(PORT_BIND) $(DOCKER_SOCKET_BIND) --entrypoint sh -v `pwd`:/app ouroborus:latest
