@@ -49,6 +49,7 @@ module Ouroborus
       @name = name
       @image = image
       @tag = tag
+      @dockerArgs = Args.new
       @args = Args.new
     end
 
@@ -57,13 +58,21 @@ module Ouroborus
     end
 
     def to_s
-      "#{@args}"
+      replaceable = Args.new
+      replaceable << "docker" << as_args
+      "#{replaceable}"
+    end
+
+    def as_args
+      replaceable = Args.new
+      replaceable << "run" << "-d"
+      replaceable << @dockerArgs << "--name" << @name << imgTag << @args
     end
 
     def port(incoming, interface = nil)
       p = "#{incoming}"
       p += ":#{interface}" unless interface.nil?
-      @args << '-p' << p
+      @dockerArgs << '-p' << p
     end
   end
 end
