@@ -74,5 +74,47 @@ module Ouroborus
       p += ":#{interface}" unless interface.nil?
       @dockerArgs << '-p' << p
     end
+
+    def env(name, value = nil)
+      @dockerArgs << '--env' << if name.is_a? Hash
+        raise "When first arg is a hash, env second arg should be nil" unless value.nil?
+        name.map do |kv|
+          normalizeEnvValue(*kv)
+        end.reduce("") do |acc, envvalue|
+          if !acc.empty?
+            acc + "," + envvalue
+          else
+            envvalue
+          end
+        end
+      elsif name.is_a? Array
+        usedValue = if value.nil? then
+          []
+        elsif value.is_a? Array then
+          usedValue = value
+        else
+          raise "When first arg is an Array, env second arg must be another array or nil"
+        end
+        name.zip(usedValue).map do |kv|
+          normalizeEnvValue(*kv)
+        end.reduce("") do |acc, envvalue|
+          if !acc.empty?
+            acc + "," + envvalue
+          else
+            envvalue
+          end
+        end
+      else
+        normalizeEnvValue(name, value)
+      end
+    end
+
+    private
+
+    def normalizeEnvValue(name, value = nil)
+      e = "#{name}"
+      e += "=#{value}" unless value.nil?
+      e
+    end
   end
 end
