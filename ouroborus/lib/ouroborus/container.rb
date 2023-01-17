@@ -15,9 +15,14 @@ module Ouroborus
       @v[pos]
     end
 
+    def empty?
+      @v.empty?
+    end
+
     def to_s
-      tmp = @v.map do |arg|
-        normalize_arg arg
+      "" if @v.empty?
+      @v.map.filter_map do |arg|
+        normalize_arg arg unless arg.is_a? Args and arg.empty?
       end.reduce '' do |acc, curr|
         next "#{curr}" if acc.empty?
         "#{acc} #{curr}"
