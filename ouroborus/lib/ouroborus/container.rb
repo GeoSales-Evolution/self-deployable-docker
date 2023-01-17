@@ -58,7 +58,6 @@ module Ouroborus
     def port(incoming, interface = nil)
       p = "#{incoming}"
       p += ":#{interface}" unless interface.nil?
-      puts "interface #{interface}"
       @args << '-p' << p
     end
   end
