@@ -29,4 +29,25 @@ describe Ouroborus::Container do
     container.port 80,8080
     expect(container.to_s).to eq("#{PREFIX} -p 80:8080 #{SUFFIX}")
   end
+
+  it 'should set an envvar' do
+    container = emptyContainer
+    container.env "JAVA_HOME"
+    expect(container.to_s).to eq("#{PREFIX} --env JAVA_HOME #{SUFFIX}")
+  end
+  it 'should set some envvar' do
+    container = emptyContainer
+    container.env ["JAVA_HOME", "MARMOTA", "CAMINHANTES_BRANCOS"]
+    expect(container.to_s).to eq("#{PREFIX} --env JAVA_HOME,MARMOTA,CAMINHANTES_BRANCOS #{SUFFIX}")
+  end
+  it 'should set some envvar with values' do
+    container = emptyContainer
+    container.env ["JAVA_HOME", "MARMOTA", "CAMINHANTES_BRANCOS"], [nil, "tante", "wight"]
+    expect(container.to_s).to eq("#{PREFIX} --env JAVA_HOME,MARMOTA=tante,CAMINHANTES_BRANCOS=wight #{SUFFIX}")
+  end
+  it 'should set some envvar with values' do
+    container = emptyContainer
+    container.env({"JAVA_HOME" => nil, "MARMOTA" => "tante", "CAMINHANTES_BRANCOS" => "wight"})
+    expect(container.to_s).to eq("#{PREFIX} --env JAVA_HOME,MARMOTA=tante,CAMINHANTES_BRANCOS=wight #{SUFFIX}")
+  end
 end
