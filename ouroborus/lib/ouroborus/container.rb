@@ -75,6 +75,12 @@ module Ouroborus
       @dockerArgs << '-p' << p
     end
 
+    def volume(their, ours = nil)
+      v = "#{their}"
+      v += ":#{ours}" unless ours.nil?
+      @dockerArgs << '-v' << v
+    end
+
     def env(name, value = nil)
       @dockerArgs << '--env' << if name.is_a? Hash
         raise "When first arg is a hash, env second arg should be nil" unless value.nil?
