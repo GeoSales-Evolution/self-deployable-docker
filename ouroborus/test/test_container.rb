@@ -13,14 +13,20 @@ describe Ouroborus::Args do
   end
 end
 describe Ouroborus::Container do
-  it 'should add an arg to a container' do
-    container = Ouroborus::Container.new name: 'lala', image: 'lala'
-    container.port 27
-    expect(container.args.to_s).to eq("-p 27")
+  def emptyContainer
+    Ouroborus::Container.new name: 'lala', image: 'leli'
   end
+
+  PREFIX = "docker run"
+  SUFFIX = "--name lala leli:latest"
   it 'should add an arg to a container' do
-    container = Ouroborus::Container.new name: 'lala', image: 'lala'
+    container = emptyContainer
+    container.port 27
+    expect(container.to_s).to eq("#{PREFIX} -p 27 #{SUFFIX}")
+  end
+  it 'should add a port to a container with mapping' do
+    container = emptyContainer
     container.port 80,8080
-    expect(container.args.to_s).to eq("-p 80:8080")
+    expect(container.to_s).to eq("#{PREFIX} -p 80:8080 #{SUFFIX}")
   end
 end
