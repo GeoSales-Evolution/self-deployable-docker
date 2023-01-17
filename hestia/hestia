@@ -20,7 +20,8 @@ EOH
 read_executable() {
 	local LINE
 	if ! read LINE; then
-		return
+		echo "no line read, aborting =/" >&2
+		exit 1
 	fi
 	if [ "${LINE:0:2}" = '#!' ]; then
 		echo "$LINE"
