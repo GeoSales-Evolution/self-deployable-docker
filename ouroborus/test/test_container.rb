@@ -12,6 +12,7 @@ describe Ouroborus::Args do
     expect(args.to_s).to eq('abc lalala\\ lelele')
   end
 end
+
 describe Ouroborus::Container do
   def emptyContainer
     Ouroborus::Container.new name: 'lala', image: 'leli'
