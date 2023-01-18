@@ -128,7 +128,7 @@ module Ouroborus
 
     def env(name, value = nil)
       @dockerArgs << '--env' << if name.is_a? Hash
-        raise "When first arg is a hash, env second arg should be nil" unless value.nil?
+        raise "When first arg passed is a Hash, env second arg should not be passed" unless value.nil?
         name.map do |kv|
           normalizeEnvValue(*kv)
         end.reduce("") do |acc, envvalue|
@@ -144,7 +144,7 @@ module Ouroborus
         elsif value.is_a? Array then
           usedValue = value
         else
-          raise "When first arg is an Array, env second arg must be another array or nil"
+          raise "When first arg is an Array, env second arg must be another array or should not be passed"
         end
         name.zip(usedValue).map do |kv|
           normalizeEnvValue(*kv)
