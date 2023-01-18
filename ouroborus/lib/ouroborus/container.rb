@@ -29,6 +29,8 @@ module Ouroborus
       end
     end
 
+    private
+
     def normalize_arg(arg)
       return arg if arg.is_a? Args
       return normalize_arg arg.to_s unless arg.is_a? String
