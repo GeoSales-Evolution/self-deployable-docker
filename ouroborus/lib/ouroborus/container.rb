@@ -62,7 +62,7 @@ module Ouroborus
     end
   end
   class Container
-    attr_reader :args
+    attr_reader :args, :name
     def initialize(name:, image:, tag: 'latest')
       @name = name
       @image = image
