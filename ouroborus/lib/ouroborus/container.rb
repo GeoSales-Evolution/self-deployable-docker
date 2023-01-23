@@ -89,9 +89,7 @@ module Ouroborus
     end
 
     def to_s
-      replaceable = Args.new
-      replaceable << "docker" << as_args
-      "#{replaceable}"
+      startCommand
     end
 
     def as_args
@@ -160,6 +158,12 @@ module Ouroborus
       else
         normalizeEnvValue(name, value)
       end
+    end
+
+    def startCommand
+      replaceable = Args.new
+      replaceable << "docker" << as_args
+      "#{replaceable}"
     end
 
     private
