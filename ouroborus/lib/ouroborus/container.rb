@@ -62,7 +62,7 @@ module Ouroborus
     end
   end
   class Container
-    attr_reader :args
+    attr_reader :args, :name
     def initialize(name:, image:, tag: 'latest')
       @name = name
       @image = image
@@ -89,9 +89,7 @@ module Ouroborus
     end
 
     def to_s
-      replaceable = Args.new
-      replaceable << "docker" << as_args
-      "#{replaceable}"
+      startCommand
     end
 
     def as_args
@@ -160,6 +158,24 @@ module Ouroborus
       else
         normalizeEnvValue(name, value)
       end
+    end
+
+    def startCommand
+      replaceable = Args.new
+      replaceable << "docker" << as_args
+      "#{replaceable}"
+    end
+
+    def stopCommand
+      "docker stop #{@name}"
+    end
+
+    def fetchImageCommand
+      "docker pull #{imgTag}"
+    end
+
+    def removeContainerCommand
+      "docker rm #{@name}"
     end
 
     private
