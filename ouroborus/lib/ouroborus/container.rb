@@ -166,6 +166,18 @@ module Ouroborus
       "#{replaceable}"
     end
 
+    def stopCommand
+      "docker stop #{@name}"
+    end
+
+    def fetchImageCommand
+      "docker pull #{imgTag}"
+    end
+
+    def removeContainerCommand
+      "docker rm #{@name}"
+    end
+
     private
 
     def normalizeEnvValue(name, value = nil)
