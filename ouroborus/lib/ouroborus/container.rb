@@ -160,22 +160,22 @@ module Ouroborus
       end
     end
 
-    def startCommand
+    def startCommand(&block)
       replaceable = Args.new
       replaceable << "docker" << as_args
-      "#{replaceable}"
+      runCommand "#{replaceable}", &block
     end
 
-    def stopCommand
-      "docker stop #{@name}"
+    def stopCommand(&block)
+      runCommand "docker stop #{@name}", &block
     end
 
-    def fetchImageCommand
-      "docker pull #{imgTag}"
+    def fetchImageCommand(&block)
+      runCommand "docker pull #{imgTag}", &block
     end
 
-    def removeContainerCommand
-      "docker rm #{@name}"
+    def removeContainerCommand(&block)
+      runCommand "docker rm #{@name}", &block
     end
 
     private
@@ -184,6 +184,14 @@ module Ouroborus
       e = "#{name}"
       e += "=#{value}" unless value.nil?
       e
+    end
+
+    def runCommand(cmd, &block)
+      if block_given? then
+       yield cmd
+      else
+        cmd
+      end
     end
   end
 end
