@@ -22,3 +22,25 @@ is reached. It will be saved in a file named `.script`. All args after `--` will
 be given to said script.
 
 Check the `--help` for `hestia` for more information.
+
+## Some examples
+
+To run hestia docker image passing a script as a parameter:
+
+```bash
+docker run hestia --script my_script.sh
+```
+
+To run hestia docker image and make its container waits for 10 seconds to finish its execution:
+
+```bash
+docker run hestia --sleep 10
+```
+
+
+To make hestia run docker commands to deploy another container:
+
+
+```bash
+docker run -v /var/run/docker.sock:/var/run/docker.sock hestia -- run -v /var/run/docker.sock:/var/run/docker.sock ouroborus
+```
