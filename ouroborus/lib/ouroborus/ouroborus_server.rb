@@ -38,6 +38,7 @@ module Ouroborus
 
       docker_socket = "/var/run/docker.sock"
       hestia_container.volume docker_socket,docker_socket
+      hestia_container.autoRemove
 
       ouroborus_container = Container.new name: 'ouroborus', image: 'ouroborus', tag: 'latest'
 
