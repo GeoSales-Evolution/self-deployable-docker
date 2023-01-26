@@ -28,20 +28,14 @@ module Ouroborus
     end
     
     def exec(cmd)
-      p "comando passado", cmd
       if @input.is_a? IO
-        p 'modo IO'
         @pid = spawn("#{cmd}", :in => @input)
-        p @pid
       else
-        p 'modo pipe'
         rd, wr = IO.pipe
         @pid = spawn("#{cmd}", :in => rd)
         if @input.nil?
-          p 'modo write'
           @wr = wr
         else
-          p 'escreveu string'
           wr.write(@input)
         end
       end
