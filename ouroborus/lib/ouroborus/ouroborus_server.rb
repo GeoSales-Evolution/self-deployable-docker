@@ -58,7 +58,7 @@ module Ouroborus
         begin
           hestia_container.startCommand &executor.willExec
         ensure
-          puts "terminou o hestia call"
+          puts "hestia call had ended"
         end
       end
     end
