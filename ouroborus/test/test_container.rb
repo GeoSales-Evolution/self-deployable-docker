@@ -20,35 +20,43 @@ describe Ouroborus::Container do
 
   PREFIX = "docker run -d"
   SUFFIX = "--name lala leli:latest"
+
+  def expectation(expected)
+    Proc.new {
+      |obtained|
+      expect(obtained).to eq("#{PREFIX} #{expected} #{SUFFIX}")
+    }
+  end
+
   it 'should add an arg to a container' do
     container = emptyContainer
     container.port 27
-    expect(container.to_s).to eq("#{PREFIX} -p 27 #{SUFFIX}")
+    container.startCommand &(expectation("-p 27"))
   end
   it 'should add a port to a container with mapping' do
     container = emptyContainer
     container.port 80,8080
-    expect(container.to_s).to eq("#{PREFIX} -p 80:8080 #{SUFFIX}")
+    container.startCommand &(expectation("-p 80:8080"))
   end
 
   it 'should set an envvar' do
     container = emptyContainer
     container.env "JAVA_HOME"
-    expect(container.to_s).to eq("#{PREFIX} --env JAVA_HOME #{SUFFIX}")
+    container.startCommand &(expectation("--env JAVA_HOME"))
   end
   it 'should set some envvar' do
     container = emptyContainer
     container.env ["JAVA_HOME", "MARMOTA", "CAMINHANTES_BRANCOS"]
-    expect(container.to_s).to eq("#{PREFIX} --env JAVA_HOME,MARMOTA,CAMINHANTES_BRANCOS #{SUFFIX}")
+    container.startCommand &(expectation("--env JAVA_HOME,MARMOTA,CAMINHANTES_BRANCOS"))
   end
   it 'should set some envvar with values' do
     container = emptyContainer
     container.env ["JAVA_HOME", "MARMOTA", "CAMINHANTES_BRANCOS"], [nil, "tante", "wight"]
-    expect(container.to_s).to eq("#{PREFIX} --env JAVA_HOME,MARMOTA=tante,CAMINHANTES_BRANCOS=wight #{SUFFIX}")
+    container.startCommand &(expectation("--env JAVA_HOME,MARMOTA=tante,CAMINHANTES_BRANCOS=wight"))
   end
   it 'should set some envvar with values' do
     container = emptyContainer
     container.env({"JAVA_HOME" => nil, "MARMOTA" => "tante", "CAMINHANTES_BRANCOS" => "wight"})
-    expect(container.to_s).to eq("#{PREFIX} --env JAVA_HOME,MARMOTA=tante,CAMINHANTES_BRANCOS=wight #{SUFFIX}")
+    container.startCommand &(expectation("--env JAVA_HOME,MARMOTA=tante,CAMINHANTES_BRANCOS=wight"))
   end
 end

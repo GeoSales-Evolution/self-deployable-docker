@@ -2,6 +2,7 @@
 
 require 'webrick'
 require_relative 'container'
+require_relative 'executor'
 
 module Ouroborus
   class ShutDownServlet < WEBrick::HTTPServlet::AbstractServlet
@@ -38,6 +39,7 @@ module Ouroborus
 
       docker_socket = "/var/run/docker.sock"
       hestia_container.volume docker_socket,docker_socket
+      hestia_container.autoRemove
 
       ouroborus_container = Container.new name: 'ouroborus', image: 'ouroborus', tag: 'latest'
 
@@ -48,9 +50,16 @@ module Ouroborus
       hestia_container.args << "--stdin"
 
       IO.pipe do |rd, wr|
-        spawn("#{hestia_container}", :in => rd)
-        wr.puts "docker rm ouroborus\n"
-        wr.puts "#{ouroborus_container}\n"
+        executor = ShellExecutor.new rd
+
+        wr.puts "#{ouroborus_container.stopCommand}"
+        wr.puts "#{ouroborus_container.removeContainerCommand}"
+        wr.puts "#{ouroborus_container.startCommand}"
+        begin
+          hestia_container.startCommand &executor.willExec
+        ensure
+          puts "hestia call had ended"
+        end
       end
     end
   end

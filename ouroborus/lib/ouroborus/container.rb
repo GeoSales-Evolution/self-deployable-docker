@@ -109,6 +109,10 @@ module Ouroborus
       @dockerArgs << '-p' << p
     end
 
+    def autoRemove
+      @dockerArgs << "--rm"
+    end
+
     def volume(their, ours = nil)
       v = "#{their}"
       v += ":#{ours}" unless ours.nil?
