@@ -34,32 +34,17 @@ module Ouroborus
     end
 
     def hestia
-      hestia_container = Container.new name: 'hestia', image: 'hestia', tag: 'latest'
-      hestia_container.daemon = false
-
-      docker_socket = "/var/run/docker.sock"
-      hestia_container.volume docker_socket,docker_socket
-      hestia_container.autoRemove
-
       ouroborus_container = Container.new name: 'ouroborus', image: 'ouroborus', tag: 'latest'
+      docker_socket = "/var/run/docker.sock"
 
       ouroborus_container.restart :UNLESS_STOPPED
       ouroborus_container.port @port,@port
       ouroborus_container.volume docker_socket,docker_socket
 
-      hestia_container.args << "--stdin"
-
-      IO.pipe do |rd, wr|
-        executor = ShellExecutor.new rd
-
-        wr.puts "#{ouroborus_container.stopCommand}"
-        wr.puts "#{ouroborus_container.removeContainerCommand}"
-        wr.puts "#{ouroborus_container.startCommand}"
-        begin
-          hestia_container.startCommand &executor.willExec
-        ensure
-          puts "hestia call had ended"
-        end
+      HestiaExecutor.run dockerSocket: docker_socket do |wrToExec|
+        wrToExec.puts "#{ouroborus_container.stopCommand}"
+        wrToExec.puts "#{ouroborus_container.removeContainerCommand}"
+        wrToExec.puts "#{ouroborus_container.startCommand}"
       end
     end
   end
