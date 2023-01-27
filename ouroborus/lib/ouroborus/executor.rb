@@ -50,5 +50,27 @@ module Ouroborus
       @retValue == 0
     end
   end
+
+  class HestiaExecutor < Executor
+    def self.run(dockerSocket:, &commandsToExecute)
+      hestia_container = Container.new name: 'hestia', image: 'hestia', tag: 'latest'
+      hestia_container.daemon = false
+
+      hestia_container.volume dockerSocket,dockerSocket
+      hestia_container.autoRemove
+      hestia_container.args << "--stdin"
+
+      IO.pipe do |rd, wr|
+        executor = ShellExecutor.new rd
+
+        commandsToExecute.call wr
+        begin
+          hestia_container.startCommand &executor.willExec
+        ensure
+          puts "hestia call had ended"
+        end
+      end
+    end
+  end
 end
 
