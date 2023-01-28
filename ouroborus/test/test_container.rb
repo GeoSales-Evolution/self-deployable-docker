@@ -32,32 +32,32 @@ describe Ouroborus::Container do
   it 'should add an arg to a container' do
     container = emptyContainer
     container.port 27
-    container.startCommand &(expectation("-p 27"))
+    container.startCommand(&expectation("-p 27"))
   end
   it 'should add a port to a container with mapping' do
     container = emptyContainer
     container.port 80,8080
-    container.startCommand &(expectation("-p 80:8080"))
+    container.startCommand(&expectation("-p 80:8080"))
   end
 
   it 'should set an envvar' do
     container = emptyContainer
     container.env "JAVA_HOME"
-    container.startCommand &(expectation("--env JAVA_HOME"))
+    container.startCommand(&expectation("--env JAVA_HOME"))
   end
   it 'should set some envvar' do
     container = emptyContainer
     container.env ["JAVA_HOME", "MARMOTA", "CAMINHANTES_BRANCOS"]
-    container.startCommand &(expectation("--env JAVA_HOME,MARMOTA,CAMINHANTES_BRANCOS"))
+    container.startCommand(&expectation("--env JAVA_HOME --env MARMOTA --env CAMINHANTES_BRANCOS"))
   end
   it 'should set some envvar with values' do
     container = emptyContainer
     container.env ["JAVA_HOME", "MARMOTA", "CAMINHANTES_BRANCOS"], [nil, "tante", "wight"]
-    container.startCommand &(expectation("--env JAVA_HOME,MARMOTA=tante,CAMINHANTES_BRANCOS=wight"))
+    container.startCommand(&expectation("--env JAVA_HOME --env MARMOTA=tante --env CAMINHANTES_BRANCOS=wight"))
   end
   it 'should set some envvar with values' do
     container = emptyContainer
     container.env({"JAVA_HOME" => nil, "MARMOTA" => "tante", "CAMINHANTES_BRANCOS" => "wight"})
-    container.startCommand &(expectation("--env JAVA_HOME,MARMOTA=tante,CAMINHANTES_BRANCOS=wight"))
+    container.startCommand(&expectation("--env JAVA_HOME --env MARMOTA=tante --env CAMINHANTES_BRANCOS=wight"))
   end
 end
