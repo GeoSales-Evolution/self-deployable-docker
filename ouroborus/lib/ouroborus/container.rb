@@ -89,16 +89,12 @@ module Ouroborus
     end
 
     def env(name, value = nil)
-      @dockerArgs << '--env' << if name.is_a? Hash
+      if name.is_a? Hash
         raise "When first arg passed is a Hash, env second arg should not be passed" unless value.nil?
         name.map do |kv|
           normalizeEnvValue(*kv)
-        end.reduce("") do |acc, envvalue|
-          if !acc.empty?
-            acc + "," + envvalue
-          else
-            envvalue
-          end
+        end.each do |envvalue|
+          @dockerArgs << '--env' << envvalue
         end
       elsif name.is_a? Array
         usedValue = if value.nil? then
@@ -110,15 +106,11 @@ module Ouroborus
         end
         name.zip(usedValue).map do |kv|
           normalizeEnvValue(*kv)
-        end.reduce("") do |acc, envvalue|
-          if !acc.empty?
-            acc + "," + envvalue
-          else
-            envvalue
-          end
+        end.each do |envvalue|
+          @dockerArgs << '--env' << envvalue
         end
       else
-        normalizeEnvValue(name, value)
+        @dockerArgs << '--env' << normalizeEnvValue(name, value)
       end
     end
 
