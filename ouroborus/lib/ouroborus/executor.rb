@@ -2,7 +2,7 @@
 
 module Ouroborus
   class Executor
-    def exec(cmd, wrDepot = :STDOUT)
+    def exec(cmd, wrDepot = :out)
       puts cmd
       true
     end
@@ -17,7 +17,7 @@ module Ouroborus
       false
     end
 
-    def execWait(cmd, wrDepot)
+    def execWait(cmd, wrDepot = :out)
       exec cmd, wrDepot
       wait
     end
@@ -33,7 +33,9 @@ module Ouroborus
       @wr.write str
     end
     
-    def exec(cmd, wrDepot = :STDOUT)
+    def exec(cmd, wrDepot = :out)
+      #wrDepot = wrDepot
+      p wrDepot
       if @input.is_a? IO
         @pid = spawn("#{cmd}", :in => @input, :out => wrDepot)
       else
