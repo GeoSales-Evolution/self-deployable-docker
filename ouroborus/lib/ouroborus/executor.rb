@@ -2,37 +2,43 @@
 
 module Ouroborus
   class Executor
-    def exec(cmd)
+    def exec(cmd, wrDepot = :STDOUT)
       puts cmd
       true
     end
 
     def willExec
-      return Proc.new { |cmd|
-        exec cmd
+      return Proc.new { |cmd, wrDepot|
+        exec cmd, wrDepot
       }
     end
 
     def wait
       false
     end
+
+    def execWait(cmd, wrDepot)
+      exec cmd, wrDepot
+      wait
+    end
   end
 
   class ShellExecutor < Executor
     def initialize(input = nil)
       @input = input
+
     end
 
     def <<(str)
       @wr.write str
     end
     
-    def exec(cmd)
+    def exec(cmd, wrDepot = :STDOUT)
       if @input.is_a? IO
-        @pid = spawn("#{cmd}", :in => @input)
+        @pid = spawn("#{cmd}", :in => @input, :out => wrDepot)
       else
         rd, wr = IO.pipe
-        @pid = spawn("#{cmd}", :in => rd)
+        @pid = spawn("#{cmd}", :in => rd, :out => wrDepot)
         if @input.nil?
           @wr = wr
         else
@@ -45,7 +51,8 @@ module Ouroborus
     def wait
       unless @retValue.nil?
         Process.wait @pid
-        @retValue = $?.exitStatus
+        @pid = nil
+        @retValue = $?.exitstatus
       end
       @retValue == 0
     end
