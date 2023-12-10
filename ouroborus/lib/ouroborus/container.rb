@@ -28,6 +28,7 @@ module Ouroborus
       @dockerArgs = Args.new
       @args = Args.new
       @daemon = true
+      @add_host = ''
     end
 
     def daemon?
@@ -40,6 +41,19 @@ module Ouroborus
       else
         @daemon = false
       end
+    end
+
+
+    def add_host?
+      !@add_host.empty?
+    end
+
+    def add_host=(value)
+      @add_host = value.to_s
+    end 
+
+    def teste
+      puts "teste >> exec branch jp"
     end
 
     def imgTag
@@ -57,6 +71,9 @@ module Ouroborus
         replaceable << "-d"
       else
         replaceable << "-i"
+      end
+      if add_host?
+        replaceable << "--add-host=#{@add_host}"
       end
       replaceable << @dockerArgs << "--name" << @name << imgTag << @args
     end
