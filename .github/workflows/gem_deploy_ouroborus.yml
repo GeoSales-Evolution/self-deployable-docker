@@ -1,0 +1,32 @@
+name: Publish Ouroborus Gem
+
+on:
+  push:
+    tags:
+      - 'ouroborus*'
+
+jobs:
+  publish-gem:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0 
+
+      - name: Publish Ouroborus Gem to GitHub Registry
+        run: |
+          mkdir -p ~/.gem
+          echo ":github: Bearer ${{ secrets.GITHUB_TOKEN }}" > ~/.gem/credentials
+          chmod 0600 ~/.gem/credentials
+          cd ouroborus
+          gem build ouroborus.gemspec
+          gem push --key github --host https://rubygems.pkg.github.com/${{ github.actor }} ouroborus-*.gem
