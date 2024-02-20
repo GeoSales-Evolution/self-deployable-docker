@@ -142,7 +142,7 @@ module Ouroborus
 
     def runCommand(cmd, &block)
       if block_given? then
-       yield cmd
+       yield cmd, :out
       else
         cmd
       end
